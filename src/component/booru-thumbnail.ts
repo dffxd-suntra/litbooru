@@ -62,7 +62,7 @@ export class BooruThumbnail extends LitElement {
     pages: number = 0;
 
     @property({ type: Number })
-    limit: number = 20;
+    limit: number = 30;
     // rule34 limit: 1000
 
     @property({ type: Array, reflect: true })
@@ -147,7 +147,7 @@ export class BooruThumbnail extends LitElement {
 
         this.pages++;
 
-        this.pics = this.pics.concat(data);
+        this.pics = [...this.pics, ...data];
         console.log(this.pics);
 
         await this.updateComplete;
