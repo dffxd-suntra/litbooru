@@ -87,7 +87,7 @@ export class BooruViewer extends LitElement {
     pageElement: Element;
 
     @query("#pic")
-    picElement: Element;
+    picElement: HTMLImageElement | HTMLVideoElement;
 
     @property({ type: Array, reflect: true })
     tags: string[] = [];
@@ -116,13 +116,31 @@ export class BooruViewer extends LitElement {
         this.dispatchEvent(new CustomEvent("tags-change", { detail: [...this.tags, tag] }));
     }
 
+    // 根据扩展名判断文件类型
+    extType(filename) {
+        let exts = {
+            "image": ["bmp", "jpg", "jpeg", "png", "gif", "webp"],
+            "video": ["mp4", "mov", "mkv", "avi", "wmv", "m4v", "xvid", "asf", "dv", "mpeg", "vob", "webm", "ogv", "divx", "3gp", "mxf", "ts", "trp", "mpg", "flv", "f4v", "swf"],
+            "audio": ["mp3", "wav", "m4a", "wma", "aac", "flac", "ac3", "aiff", "m4b", "m4r", "au", "ape", "mka", "ogg", "mid"]
+        };
+        let ext = filename.split(".").pop();
+        for (let i in exts) {
+            if (exts[i].includes(ext)) {
+                return i;
+            }
+        }
+        return false;
+    }
+
     render() {
+        let media = (this.extType(this.pic.image) == "video" ? html`<video src=${this.pic.file_url} id="pic" style=${styleMap({ "aspect-ratio": `${this.pic.width}/${this.pic.height}` })} muted controls></video>` : html`<img src=${this.pic.file_url} id="pic" style=${styleMap({ "aspect-ratio": `${this.pic.width}/${this.pic.height}` })} />`);
+
         return html`
         <div class="page" style=${styleMap({ display: (this.display ? "" : "none") })}>
             <div class="tool-box">
                 <div @click=${() => this.dispatchEvent(new CustomEvent("close"))}>${unsafeSVG(feather.icons["x"].toSvg({ color: "white" }))}</div>
             </div>
-            <img src=${this.pic.file_url} id="pic" style=${styleMap({ "aspect-ratio": `${this.pic.width}/${this.pic.height}` })} />
+            ${media}
             <div class="infos">
                 <table>
                     <tbody>
@@ -152,6 +170,10 @@ export class BooruViewer extends LitElement {
     updated() {
         $("body").css("overflow", (this.display ? "hidden" : ""));
         this.picResize();
+
+        if (this.display && this.extType(this.pic.image) == "video") {
+            (<HTMLVideoElement>this.picElement).pause();
+        }
     }
 
     firstUpdated() {
