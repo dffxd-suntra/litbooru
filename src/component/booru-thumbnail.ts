@@ -161,12 +161,11 @@ export class BooruThumbnail extends LitElement {
         if (this.loading || this.isOver) {
             return;
         }
-        console.log(this.columns, this.columnHeight, Math.min(...this.columnHeight), $(document).scrollTop() + $(window).height());
         if (this.columns == 0 || Math.min(...this.columnHeight) <= $(document).scrollTop() + $(window).height()) {
             this.loading = true;
             try {
                 await this.loadNextPage();
-            } catch(e) {
+            } catch (e) {
                 console.error("autoLoadPic ERROR:", e);
             };
             this.loading = false;
@@ -222,6 +221,17 @@ export class BooruThumbnail extends LitElement {
         this.dispatchEvent(new CustomEvent("thumbnail-click", { detail: pic }));
     }
 
+    handleWindowResize = () => {
+        this.noiseDelay("waterfall", () => {
+            this.waterfall();
+            this.autoLoadPic();
+        }, 500);
+    }
+
+    handleWindowScroll = () => {
+        this.autoLoadPic();
+    }
+
     render() {
         let picsHtml = this.pics.map(pic => {
             return html`
@@ -249,12 +259,23 @@ export class BooruThumbnail extends LitElement {
         `;
     }
 
+    connectedCallback() {
+        super.connectedCallback();
+
+        $(window).on("resize", this.handleWindowResize);
+        $(window).on("scroll", this.handleWindowScroll);
+    }
+
+    disconnectedCallback() {
+        super.disconnectedCallback();
+
+        $(window).off("resize", this.handleWindowResize);
+        $(window).off("scroll", this.handleWindowScroll);
+    }
+
     firstUpdated() {
         // console.log("inited");
         this.autoLoadPic();
-
-        $(window).on("resize", () => this.noiseDelay("waterfall", () => { this.waterfall(); this.autoLoadPic(); }, 500));
-        $(window).on("scroll", () => this.autoLoadPic());
     }
 }
 
