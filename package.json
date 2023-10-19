@@ -1,0 +1,26 @@
+{
+  "name": "litbooru",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@popperjs/core": "^2.11.8",
+    "feather-icons": "^4.29.1",
+    "jquery": "^3.7.1",
+    "lazysizes": "^5.3.2",
+    "lit": "^2.7.6",
+    "sass": "^1.68.0",
+    "vanilla-lazyload": "^17.8.5"
+  },
+  "devDependencies": {
+    "@types/feather-icons": "^4.29.2",
+    "@types/jquery": "^3.5.20",
+    "typescript": "^5.0.2",
+    "vite": "^4.4.5"
+  }
+}

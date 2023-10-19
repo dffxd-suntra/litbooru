@@ -1,0 +1,25 @@
+body {
+    padding: 0;
+    margin: 0;
+    background-color: rgb(25, 23, 20);
+    color: rgb(255 245 207);
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    width: 10px;
+    background-color: #fff3;
+    border: solid 1px rgba(162, 148, 123, 0.4);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, .3);
+}
+
+::-webkit-scrollbar-corner {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAIAAAACUFjqAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABJSURBVChTY/z/iQEPYILSOABImpEPhOAAjcsANB9iBZyEM4izG81wOEDohosim4dwOVAUgoDgrZYKhMTpMYgK7NLC1+6AyGt3AKeXIPH7jPPdAAAAAElFTkSuQmCC);
+}
