@@ -187,7 +187,9 @@ export class BooruSearch extends LitElement {
                     </ol>
                     <b>${searchStatus}</b>
                 </div>
-                <div class="footer"></div>
+                <div class="footer">
+                    <a href="https://github.com/dffxd-suntra/litbooru">${unsafeSVG(feather.icons["github"].toSvg())}Litbooru Source</a>
+                </div>
             </div>
         </div>
         `;
@@ -195,7 +197,7 @@ export class BooruSearch extends LitElement {
 
     updated() {
         $("body").css("overflow", (this.display ? "hidden" : ""));
-        if(this.display) {
+        if (this.display) {
             this.searchInputElement.focus();
         }
     }

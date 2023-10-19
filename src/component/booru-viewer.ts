@@ -133,7 +133,7 @@ export class BooruViewer extends LitElement {
     }
 
     render() {
-        let media = (this.extType(this.pic.image) == "video" ? html`<video src=${this.pic.file_url} id="pic" style=${styleMap({ "aspect-ratio": `${this.pic.width}/${this.pic.height}` })} muted controls></video>` : html`<img src=${this.pic.file_url} id="pic" style=${styleMap({ "aspect-ratio": `${this.pic.width}/${this.pic.height}` })} />`);
+        let media = (this.extType(this.pic.image) == "video" ? html`<video src=${this.pic.file_url} id="pic" style=${styleMap({ "aspect-ratio": `${this.pic.width}/${this.pic.height}` })} muted loop controls></video>` : html`<img src=${this.pic.file_url} id="pic" style=${styleMap({ "aspect-ratio": `${this.pic.width}/${this.pic.height}` })} />`);
 
         return html`
         <div class="page" style=${styleMap({ display: (this.display ? "" : "none") })}>
@@ -171,7 +171,7 @@ export class BooruViewer extends LitElement {
         $("body").css("overflow", (this.display ? "hidden" : ""));
         this.picResize();
 
-        if (this.display && this.extType(this.pic.image) == "video") {
+        if (!this.display && this.extType(this.pic.image) == "video") {
             (<HTMLVideoElement>this.picElement).pause();
         }
     }
