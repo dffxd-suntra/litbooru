@@ -1,6 +1,8 @@
 {
-    "name": "",
-    "short_name": "",
+    "name": "Lit Booru",
+    "short_name": "Lit Booru",
+    "description": "A Booru Viewer or Tool Box.",
+    "start_url": ".",
     "icons": [
         {
             "src": "/android-chrome-192x192.png",
@@ -13,7 +15,12 @@
             "type": "image/png"
         }
     ],
-    "theme_color": "#ffffff",
-    "background_color": "#ffffff",
-    "display": "standalone"
+    "theme_color": "rgb(25, 23, 20)",
+    "background_color": "rgb(25, 23, 20)",
+    "display": "standalone",
+    "related_applications": [
+        {
+            "platform": "web"
+        }
+    ]
 }

@@ -161,7 +161,7 @@ export class BooruThumbnail extends LitElement {
         if (this.loading || this.isOver) {
             return;
         }
-        // console.log(this.columns, this.columnHeight, Math.min(...this.columnHeight), $(document).scrollTop() + $(window).height());
+        console.log(this.columns, this.columnHeight, Math.min(...this.columnHeight), $(document).scrollTop() + $(window).height());
         if (this.columns == 0 || Math.min(...this.columnHeight) <= $(document).scrollTop() + $(window).height()) {
             this.loading = true;
             try {
