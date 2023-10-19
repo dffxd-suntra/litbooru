@@ -137,13 +137,22 @@ export class BooruThumbnail extends LitElement {
         postsUrl.searchParams.set("tags", this.tagsString());
 
         console.log(postsUrl.href);
-        let data = await fetch(postsUrl.href).then(res => res.json());
+        let data = await fetch(postsUrl.href)
+            .then(res => res.json())
+            .then(data => {
+                if (data.length == 0) {
+                    throw new SyntaxError("Last Page");
+                }
+                return data;
+            })
+            .catch(e => {
+                if (e.constructor != SyntaxError) {
+                    return;
+                }
+                this.isOver = true;
+                throw e;
+            });
         console.log(data);
-
-        if (data.length == 0) {
-            this.isOver = true;
-            return;
-        }
 
         this.pages++;
 
