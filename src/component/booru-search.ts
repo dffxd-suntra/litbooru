@@ -122,6 +122,10 @@ export class BooruSearch extends LitElement {
         this.searchAdviseList = [];
         this.searching = true;
         let text = e.target.value;
+        let negated = text.startsWith("-");
+        if (negated) {
+            text = text.substring(1);
+        }
         console.log(text);
 
         this.tagSearchController.abort();
@@ -134,6 +138,14 @@ export class BooruSearch extends LitElement {
             .then(res => res.json())
             .then(data => { // 使用then避免取消上一次的signal后报错
                 console.log(data);
+
+                if (negated) {
+                    data = data.map((v: any) => {
+                        v.label = "-" + v.label;
+                        v.value = "-" + v.value;
+                        return v;
+                    });
+                }
 
                 this.searchAdviseList = data;
 
