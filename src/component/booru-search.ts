@@ -121,7 +121,8 @@ export class BooruSearch extends LitElement {
     async onSearch(e: any) {
         this.searchAdviseList = [];
         this.searching = true;
-        let text = e.target.value;
+        let text: string = e.target.value;
+        text = text.trim().replace(/ /g, "_");
         let negated = text.startsWith("-");
         if (negated) {
             text = text.substring(1);
