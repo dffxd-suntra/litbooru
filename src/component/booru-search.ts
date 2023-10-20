@@ -155,16 +155,40 @@ export class BooruSearch extends LitElement {
             .catch(() => { });
     }
 
+    noiseDelay = (() => {
+        let functionPool = Object.create(null);
+
+        return (target: string, func: Function, delay: number) => {
+            if (target in functionPool) {
+                clearTimeout(functionPool[target]);
+            }
+            functionPool[target] = setTimeout(() => {
+                func();
+                delete functionPool[target];
+            }, delay);
+        }
+    })();
+
+    dispatchTagsChangeEvent() {
+        this.noiseDelay("tags-change", () => this.dispatchEvent(new CustomEvent("tags-change", { detail: this.tags })), 500);
+    }
+
     addTag(tag: string) {
         if (this.tags.includes(tag)) {
             return;
         }
 
-        this.dispatchEvent(new CustomEvent("tags-change", { detail: [...this.tags, tag] }));
+        this.tags = [...this.tags, tag];
+        this.dispatchTagsChangeEvent();
     }
 
     removeTag(tag: string) {
-        this.dispatchEvent(new CustomEvent("tags-change", { detail: this.tags.filter(v => v != tag) }));
+        if (!this.tags.includes(tag)) {
+            return;
+        }
+
+        this.tags = this.tags.filter(v => v != tag);
+        this.dispatchTagsChangeEvent();
     }
 
     render() {

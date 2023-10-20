@@ -174,9 +174,7 @@ export class BooruThumbnail extends LitElement {
             this.loading = true;
             try {
                 await this.loadNextPage();
-            } catch (e) {
-                console.error("autoLoadPic ERROR:", e);
-            };
+            } catch (e) { };
             this.loading = false;
             this.autoLoadPic();
         }
