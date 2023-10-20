@@ -4,6 +4,7 @@ just lit-element + vite
 demo: [https://litbooru.pages.dev/](https://litbooru.pages.dev/)  
 
 Todo:
+- [ ] Drag to Tagging https://interactjs.io/
 - [x] [rule34.xxx](https://rule34.xxx/)
 - [ ] [danbooru](https://danbooru.donmai.us/)
 - [ ] [gelbooru](https://gelbooru.com/)
