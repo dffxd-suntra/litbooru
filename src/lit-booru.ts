@@ -47,7 +47,7 @@ export class LitBooru extends LitElement {
     @property({ type: Object })
     browsingPic: picInfo = null;
 
-    @property({ type: Array })
+    @property({ type: Array, hasChanged(newTags: any) { history.pushState(null, "", `?tags=${newTags.join(" ")}`); return true; } })
     tags: string[] = (new URL(location.href).searchParams.get("tags") || "").split(" ").filter(tag => tag != "");
 
     onSearchClick() {
@@ -81,8 +81,6 @@ export class LitBooru extends LitElement {
     }
 
     updated() {
-        history.pushState(null, "", `?tags=${this.tags.join(" ")}`);
-
         window.clarity("set", "tags", this.tags);
     }
 
