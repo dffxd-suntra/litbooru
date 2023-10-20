@@ -1,6 +1,7 @@
 # lit-booru
 good booru viewer  
 just lit-element + vite  
+demo: [https://litbooru.pages.dev/](https://litbooru.pages.dev/)  
 
 Todo:
 - [x] [rule34.xxx](https://rule34.xxx/)
