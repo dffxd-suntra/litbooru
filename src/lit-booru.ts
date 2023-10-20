@@ -47,7 +47,7 @@ export class LitBooru extends LitElement {
     @property({ type: Object })
     browsingPic: picInfo = null;
 
-    @property({ type: Array, hasChanged: (value: string[]) => { history.pushState(null, "", `?tags=${value.join(" ")}`); return true; } })
+    @property({ type: Array })
     tags: string[] = (new URL(location.href).searchParams.get("tags") || "").split(" ").filter(tag => tag != "");
 
     onSearchClick() {
@@ -78,6 +78,12 @@ export class LitBooru extends LitElement {
         ${keyed(this.tags, html`<booru-thumbnail .tags=${this.tags} @thumbnail-click=${(e: CustomEvent) => this.onView(e.detail)}></booru-thumbnail>`)}
         ${viewer}
         `;
+    }
+
+    updated() {
+        history.pushState(null, "", `?tags=${this.tags.join(" ")}`);
+
+        window.clarity("set", "tags", this.tags);
     }
 
     constructor() {
