@@ -7,6 +7,7 @@ import $ from "jquery";
 import defaultCSS from "../index.css?inline";
 
 import "./base-badge";
+import { keyed } from "lit/directives/keyed.js";
 
 interface picInfo {
     id: number,
@@ -140,7 +141,7 @@ export class BooruViewer extends LitElement {
             <div class="tool-box">
                 <div @click=${() => this.dispatchEvent(new CustomEvent("close"))}>${unsafeSVG(feather.icons["x"].toSvg({ color: "white" }))}</div>
             </div>
-            ${media}
+            ${keyed(this.pic, media)}
             <div class="infos">
                 <table>
                     <tbody>
