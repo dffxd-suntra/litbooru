@@ -54,6 +54,8 @@ export class BooruViewer extends LitElement {
 
     #pic {
         display: block;
+
+        box-shadow: 0 0 20px 0px rgba(255, 255, 255, .5);
     }
 
     .infos {
