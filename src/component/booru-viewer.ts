@@ -9,31 +9,6 @@ import defaultCSS from "../index.css?inline";
 import "./base-badge";
 import { keyed } from "lit/directives/keyed.js";
 
-interface picInfo {
-    id: number,
-    tags: string,
-    height: number,
-    width: number,
-    file_url: string,
-    has_notes: boolean
-    hash: string,
-    image: string,
-    owner: string
-    parent_id: number,
-    preview_url: string,
-    rating: string,
-    sample: boolean,
-    sample_height: number,
-    sample_url: string,
-    sample_width: number,
-    score: number,
-    source: string,
-    change: number,
-    comment_count: number,
-    directory: number,
-    status: string
-};
-
 @customElement("booru-viewer")
 export class BooruViewer extends LitElement {
     static styles = [css`
