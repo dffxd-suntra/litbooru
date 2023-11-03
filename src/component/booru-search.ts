@@ -22,6 +22,8 @@ export class BooruSearch extends LitElement {
 
         display: flex;
         justify-content: center;
+
+        overflow: auto;
     }
 
     .content {
