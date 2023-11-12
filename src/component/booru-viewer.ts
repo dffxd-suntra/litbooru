@@ -54,6 +54,11 @@ export class BooruViewer extends LitElement {
         display: flex;
         flex-direction: column;
     }
+
+    a {
+        color: inherit;
+        text-decoration: none;
+    }
     `, unsafeCSS(defaultCSS)];
 
     @property({ type: Boolean, reflect: true })
@@ -133,7 +138,7 @@ export class BooruViewer extends LitElement {
                         </tr>
                         <tr>
                             <th>Tags:</th>
-                            <td>${this.pic.tags.split(" ").map(tag => html`<base-badge @click=${() => this.addTag(tag)}><a href=${"?tags=" + encodeURIComponent(tag)}>${tag}</a></base-badge>`)}</td>
+                            <td>${this.pic.tags.split(" ").map(tag => html`<base-badge><a @click=${() => { this.addTag(tag); return false; }} href=${"?tags=" + encodeURIComponent(tag)}>${tag}</a></base-badge>`)}</td>
                         </tr>
                         <tr>
                             <th>Size:</th>
