@@ -21,6 +21,7 @@ export class BooruNav extends LitElement {
 
     .nav:hover {
         font-size: xx-large;
+        background-color: rgba(25, 23, 20, .7);
     }
 
     .title {
