@@ -15,7 +15,7 @@ export class BaseBadge extends LitElement {
     }
 
     .badge:hover {
-        background-color: rgba(255, 255, 255, .7);
+        background-color: rgba(255, 255, 255, .4);
     }
     `;
 
