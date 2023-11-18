@@ -1,7 +1,7 @@
 {
     "name": "Lit Booru",
     "short_name": "Lit Booru",
-    "description": "A Booru Viewer or Tool Box.",
+    "description": "A Booru Viewer.",
     "start_url": ".",
     "icons": [
         {

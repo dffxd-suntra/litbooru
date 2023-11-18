@@ -20,6 +20,9 @@ export class BooruThumbnail extends LitElement {
     .pic {
         position: absolute;
         border: 1px solid rgba(162, 148, 123, 0.4);
+
+        border-radius: .25rem;
+        overflow: hidden;
     }
 
     .thumbnail {
