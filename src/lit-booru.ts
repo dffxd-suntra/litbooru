@@ -7,9 +7,13 @@ import "./component/booru-nav";
 import "./component/booru-search";
 import "./component/booru-thumbnail";
 import "./component/booru-viewer";
+import "./component/booru-loading";
 
 @customElement("lit-booru")
 export class LitBooru extends LitElement {
+    @property({ type: Boolean })
+    loaded: boolean = false;
+
     @property({ type: Number })
     nsfwConfirmDate: number = JSON.parse(localStorage.getItem("nsfw-confirm-date") || "0");
 
@@ -24,6 +28,10 @@ export class LitBooru extends LitElement {
 
     @property({ type: Array, hasChanged(newTags: any) { history.pushState(null, "", `?tags=${newTags.join(" ")}`); return true; } })
     tags: string[] = (new URL(location.href).searchParams.get("tags") || "").split(" ").filter(tag => tag != "");
+
+    onLoaded() {
+        this.loaded = true;
+    }
 
     onSearchClick() {
         this.searchDisplay = !this.searchDisplay;
@@ -41,6 +49,10 @@ export class LitBooru extends LitElement {
     }
 
     render() {
+        if(!this.loaded) {
+            return html`<booru-loading @onloaded=${this.onLoaded}></booru-loading>`;
+        }
+
         // 一次管4小时
         let warning = (Date.now() - this.nsfwConfirmDate > 4 * 60 * 60 * 1000 ? html`<booru-warning @close-warning=${this.closeWarning}></booru-warning>` : "");
 

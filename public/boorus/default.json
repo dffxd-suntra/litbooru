@@ -1,10 +1,9 @@
+
 [
     {
         "icon": "https://gelbooru.com/favicon.png",
-        "name": "Gelbooru",
-        "auther": "dffxd-suntra",
-        "description": "Gelbooru plugin.",
-        "version": "0.0.1",
+        "title": "Gelbooru",
+        "subtitle": "author:dffxd-suntra",
         "src": "./boorus/gelbooru.js"
     }
 ]

@@ -11,16 +11,14 @@ npm run build # 编译源码
 ```
   
 ## booru扩展插件：  
-网站跟目录下`booru/default.json`文件定义了默认的插件列表，用户可在前端自行添加，并保存到本地。  
+网站跟目录下`booru/default.json`文件定义了默认的插件列表，用户可在前端自行添加。  
 `booru/default.json`文件格式如下：
 ```javascript
 [
     {
         "icon": "https://gelbooru.com/favicon.png",
-        "name": "Gelbooru",
-        "auther": "dffxd-suntra abc@example.com",
-        "description": "Gelbooru plugin.",
-        "version": "0.0.1",
+        "title": "Gelbooru",
+        "subtitle": "-- dffxd-suntra",
         "src": "./boorus/gelbooru.js"
     }
 ]
