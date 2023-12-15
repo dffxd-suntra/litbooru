@@ -83,9 +83,7 @@ export class LitBooru extends LitElement {
         history.pushState({}, "", url.href);
     }
 
-    constructor() {
-        super();
-
+    firstUpdated() {
         window.addEventListener("storage", () => {
             this.nsfwConfirmDate = JSON.parse(localStorage.getItem("nsfw-confirm-date") || "0");
         });
