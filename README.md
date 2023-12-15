@@ -15,17 +15,10 @@ npm run build # 编译源码
 `booru/default.json`文件格式如下：
 ```javascript
 [
-    {
-        "icon": "https://gelbooru.com/favicon.png",
-        "title": "Gelbooru",
-        "subtitle": "-- dffxd-suntra",
-        "src": "./boorus/gelbooru.js"
-    }
+    "./boorus/gelbooru.js"
 ]
 ```
-用一个数组包含若干个对象,每一个对象代表一个插件  
-其中`"src"`和`"icon"`若使用相对文件目录，则以网站代码目录为准  
-实例的六个键每一个键都必须要有，即使是空字符串
+`"src"`若使用相对文件目录，则以网站`index.html`所在目录为准.  
 
 ## Todo: 优先级基本从低到高
 - [ ] 代码全注释

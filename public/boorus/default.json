@@ -1,9 +1,4 @@
 
 [
-    {
-        "icon": "https://gelbooru.com/favicon.png",
-        "title": "Gelbooru",
-        "subtitle": "author:dffxd-suntra",
-        "src": "./boorus/gelbooru.js"
-    }
+    "./boorus/gelbooru.js"
 ]

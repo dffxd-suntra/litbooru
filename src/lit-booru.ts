@@ -9,6 +9,8 @@ import "./component/booru-thumbnail";
 import "./component/booru-viewer";
 import "./component/booru-loading";
 
+import { getExtensionList } from "./extension";
+
 @customElement("lit-booru")
 export class LitBooru extends LitElement {
     @property({ type: Boolean })
@@ -26,11 +28,16 @@ export class LitBooru extends LitElement {
     @property({ type: Object })
     browsingPic: picInfo = null;
 
-    @property({ type: Array, hasChanged(newTags: any) { history.pushState(null, "", `?tags=${newTags.join(" ")}`); return true; } })
+    @property({ type: String })
+    extensionName: string = new URL(location.href).searchParams.get("ext") || "";
+
+    @property({ type: Array })
     tags: string[] = (new URL(location.href).searchParams.get("tags") || "").split(" ").filter(tag => tag != "");
 
     onLoaded() {
         this.loaded = true;
+
+        getExtensionList();
     }
 
     onSearchClick() {
@@ -49,7 +56,7 @@ export class LitBooru extends LitElement {
     }
 
     render() {
-        if(!this.loaded) {
+        if (!this.loaded) {
             return html`<booru-loading @onloaded=${this.onLoaded}></booru-loading>`;
         }
 
@@ -69,6 +76,11 @@ export class LitBooru extends LitElement {
 
     updated() {
         window.clarity("set", "tags", this.tags);
+
+        let url = new URL(location.href);
+        url.searchParams.set("tags", this.tags.join(" "));
+        url.searchParams.set("ext", this.extensionName);
+        history.pushState({}, "", url.href);
     }
 
     constructor() {
@@ -83,29 +95,5 @@ export class LitBooru extends LitElement {
 declare global {
     interface HTMLElementTagNameMap {
         "lit-booru": LitBooru
-    }
-    interface picInfo {
-        id: number
-        tags: string
-        height: number
-        width: number
-        file_url: string
-        has_notes: boolean
-        hash: string
-        image: string
-        owner: string
-        parent_id: number
-        preview_url: string
-        rating: string
-        sample: boolean
-        sample_height: number
-        sample_url: string
-        sample_width: number
-        score: number
-        source: string
-        change: number
-        comment_count: number
-        directory: number
-        status: string
     }
 }

@@ -26,6 +26,12 @@ dependencies:
   lit:
     specifier: ^2.7.6
     version: 2.8.0
+  lodash:
+    specifier: ^4.17.21
+    version: 4.17.21
+  marked:
+    specifier: ^11.1.0
+    version: 11.1.0
   sass:
     specifier: ^1.68.0
     version: 1.69.5
@@ -434,6 +440,16 @@ packages:
       '@lit/reactive-element': 1.6.3
       lit-element: 3.3.3
       lit-html: 2.8.0
+    dev: false
+
+  /lodash@4.17.21:
+    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
+    dev: false
+
+  /marked@11.1.0:
+    resolution: {integrity: sha512-fvKJWAPEafVj1dwGwcPI5mBB/0pvViL6NlCbNDG1HOIRwwAU/jeMoFxfbRLuirO1wRH7m4yPvBqD/O1wyWvayw==}
+    engines: {node: '>= 18'}
+    hasBin: true
     dev: false
 
   /nanoid@3.3.7:
