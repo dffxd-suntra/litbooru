@@ -2,10 +2,10 @@ import { ExtensionInfo, ExtensionMeta } from "../types/extension";
 
 export default class ExtensionUntils {
     extInfo: ExtensionInfo;
-    async getValue(key: string): Promise<any> { console.warn("ExtensionUntils 的 键值对存储正在开发。"); }
-    async setValue(key: string, value: any): Promise<void> { console.warn("ExtensionUntils 的 键值对存储正在开发。"); }
+    async getValue(_key: string): Promise<any> { console.warn("ExtensionUntils 的 键值对存储正在开发。"); }
+    async setValue(_key: string, _value: any): Promise<void> { console.warn("ExtensionUntils 的 键值对存储正在开发。"); }
     async getValueList(): Promise<any> { console.warn("ExtensionUntils 的 键值对存储正在开发。"); }
-    async deleteValue(key: string): Promise<void> { console.warn("ExtensionUntils 的 键值对存储正在开发。"); }
+    async deleteValue(_key: string): Promise<void> { console.warn("ExtensionUntils 的 键值对存储正在开发。"); }
     getExtProp(): ExtensionMeta {
         return this.extInfo.meta;
     }
