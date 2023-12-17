@@ -1,13 +1,13 @@
-import { LitElement, css, html, unsafeCSS } from "lit";
+import { LitElement, TemplateResult, css, html, unsafeCSS } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import { unsafeSVG } from "lit/directives/unsafe-svg.js";
 import { styleMap } from "lit/directives/style-map.js";
 import feather from "feather-icons";
 import $ from "jquery";
 import defaultCSS from "../index.css?inline";
-
 import "./base-badge";
 import { keyed } from "lit/directives/keyed.js";
+import { PostInfo } from "../types/post";
 
 @customElement("booru-viewer")
 export class BooruViewer extends LitElement {
@@ -18,7 +18,7 @@ export class BooruViewer extends LitElement {
         left: 0;
         width: 100%;
         height: 100%;
-        z-index: 100;
+        z-index: 200;
         background-color: rgba(0, 0, 0, .5);
 
         display: flex;
@@ -27,11 +27,12 @@ export class BooruViewer extends LitElement {
         overflow-y: scroll;
     }
 
-    #pic {
+    #post {
         display: block;
 
         background-color: rgba(255, 255, 255, 0.5);
         box-shadow: 0 0 20px 0px rgba(255, 255, 255, .5);
+        backdrop-filter: blur(10px);
     }
 
     .infos {
@@ -50,6 +51,7 @@ export class BooruViewer extends LitElement {
         position: fixed;
         top: 10px;
         right: 10px;
+        z-index: 100;
 
         display: flex;
         flex-direction: column;
@@ -65,84 +67,88 @@ export class BooruViewer extends LitElement {
     display: boolean = false;
 
     @property({ type: Object, reflect: true })
-    pic: picInfo;
+    post: PostInfo;
 
     @query(".page")
     pageElement: Element;
 
-    @query("#pic")
-    picElement: HTMLImageElement | HTMLVideoElement;
+    @query("#post")
+    postElement: HTMLImageElement | HTMLVideoElement;
 
     @property({ type: Array, reflect: true })
-    tags: string[] = [];
+    tags: TagInfo[] = [];
 
     picResize() {
-        let w, h;
-        if (this.pic.width / this.pic.height > $(this.pageElement).width() / $(this.pageElement).height()) {
+        let w: number, h: number;
+        if (this.post.width / this.post.height > $(this.pageElement).width() / $(this.pageElement).height()) {
             w = $(this.pageElement).width();
-            h = this.pic.height * (w / this.pic.width);
+            h = this.post.height * (w / this.post.width);
         } else {
             h = $(this.pageElement).height();
-            w = this.pic.width * (h / this.pic.height);
+            w = this.post.width * (h / this.post.height);
         }
-        $(this.picElement).css({
+        $(this.postElement).css({
             width: w,
             height: h,
             margin: `${($(this.pageElement).height() - h) / 2}px ${($(this.pageElement).width() - w) / 2}px`
         });
     }
 
-    addTag(tag: string) {
-        if (this.tags.includes(tag)) {
+    addTag(tag: TagInfo) {
+        if (this.tags.map(tag => tag.value).includes(tag.value)) {
             return;
         }
 
         this.dispatchEvent(new CustomEvent("tags-change", { detail: [...this.tags, tag] }));
     }
 
-    // 根据扩展名判断文件类型
-    extType(filename) {
-        let exts = {
-            "image": ["bmp", "jpg", "jpeg", "png", "gif", "webp"],
-            "video": ["mp4", "mov", "mkv", "avi", "wmv", "m4v", "xvid", "asf", "dv", "mpeg", "vob", "webm", "ogv", "divx", "3gp", "mxf", "ts", "trp", "mpg", "flv", "f4v", "swf"],
-            "audio": ["mp3", "wav", "m4a", "wma", "aac", "flac", "ac3", "aiff", "m4b", "m4r", "au", "ape", "mka", "ogg", "mid"]
-        };
-        let ext = filename.split(".").pop();
-        for (let i in exts) {
-            if (exts[i].includes(ext)) {
-                return i;
-            }
-        }
-        return false;
-    }
-
     render() {
-        let media = (this.extType(this.pic.image) == "video" ? html`<video src=${this.pic.file_url} id="pic" style=${styleMap({ "aspect-ratio": `${this.pic.width}/${this.pic.height}` })} muted loop controls></video>` : html`<img src=${this.pic.file_url} id="pic" style=${styleMap({ "aspect-ratio": `${this.pic.width}/${this.pic.height}` })} />`);
+        let media: TemplateResult;
+        switch (this.post.type) {
+            case "image":
+                media = html`<img src=${this.post.view_url} id="post" style=${styleMap({ "aspect-ratio": `${this.post.width}/${this.post.height}` })} />`;
+                break;
+            case "video":
+                media = html`<video src=${this.post.view_url} id="post" style=${styleMap({ "aspect-ratio": `${this.post.width}/${this.post.height}` })} muted loop controls></video>`;
+                break;
+            case "audio":
+                media = html`<audio src=${this.post.view_url} id="post" style=${styleMap({ "aspect-ratio": `${this.post.width}/${this.post.height}` })} muted loop controls></audio>`;
+                break;
+        }
 
         return html`
         <div class="page" style=${styleMap({ display: (this.display ? "" : "none") })}>
             <div class="tool-box">
                 <div @click=${() => this.dispatchEvent(new CustomEvent("close"))}>${unsafeSVG(feather.icons["x"].toSvg({ color: "white" }))}</div>
             </div>
-            ${keyed(this.pic, media)}
+            ${keyed(this.post, media)}
             <div class="infos">
                 <table>
                     <tbody>
                         <tr>
                             <th>Url:</th>
-                            <td><a href=${this.pic.file_url} target="_block">${this.pic.file_url}</a></td>
+                            <td><a href=${this.post.view_url} target="_block">${this.post.view_url}</a></td>
                         </tr>
                         <tr>
                             <th>Source:</th>
-                            <td>${this.pic.source || "none"}</td>
+                            <td>${this.post.source || "none"}</td>
                         </tr>
                         <tr>
                             <th>Tags:</th>
-                            <td>${this.pic.tags.split(" ").map(tag => html`<base-badge><a @click=${() => { this.addTag(tag); return false; }} href=${"?tags=" + encodeURIComponent(tag)}>${tag}</a></base-badge>`)}</td>
+                            <td>${this.post.tags.map(tag => html`<base-badge><a @click=${() => { this.addTag(tag); return false; }} href=${"?tags=" + encodeURIComponent(tag.value)}>${tag.label}</a></base-badge>`)}</td>
                         </tr>
                         <tr>
                             <th>Size:</th>
-                            <td>${this.pic.width} x ${this.pic.height}</td>
+                            <td>${this.post.width} x ${this.post.height}</td>
+                        </tr>
+                        <tr>
+                            <th>Debug:</th>
+                            <td>
+                                <details>
+                                    <summary>DATA:</summary>
+                                    ${JSON.stringify(this.post)}
+                                </details>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -155,8 +161,8 @@ export class BooruViewer extends LitElement {
         $("body").css("overflow", (this.display ? "hidden" : ""));
         this.picResize();
 
-        if (!this.display && this.extType(this.pic.image) == "video") {
-            (<HTMLVideoElement>this.picElement).pause();
+        if (!this.display && (this.post.type == "video" || this.post.type == "audio")) {
+            (<HTMLVideoElement | HTMLAudioElement>this.postElement).pause();
         }
     }
 

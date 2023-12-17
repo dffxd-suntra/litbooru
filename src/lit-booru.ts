@@ -2,14 +2,15 @@ import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { keyed } from "lit/directives/keyed.js";
 
+import "./component/booru-posts";
 import "./component/booru-warning";
 import "./component/booru-nav";
 import "./component/booru-search";
-import "./component/booru-thumbnail";
-import "./component/booru-viewer";
 import "./component/booru-loading";
+import "./component/booru-viewer";
 
-import { getExtensionList } from "./extension";
+import { chooseExtension, getExtension, getExtensionList } from "./extension";
+import { PostInfo } from "./types/post";
 
 @customElement("lit-booru")
 export class LitBooru extends LitElement {
@@ -26,27 +27,38 @@ export class LitBooru extends LitElement {
     viewerDisplay: boolean = false;
 
     @property({ type: Object })
-    browsingPic: picInfo = null;
+    browsingPost: PostInfo = null;
 
     @property({ type: String })
     extensionName: string = new URL(location.href).searchParams.get("ext") || "";
 
     @property({ type: Array })
-    tags: string[] = (new URL(location.href).searchParams.get("tags") || "").split(" ").filter(tag => tag != "");
+    tags: TagInfo[] = (new URL(location.href).searchParams.get("tags") || "").split(" ").filter(tag => tag != "").map(value => <TagInfo>new Object({ name: value, label: value, category: "" }));
+
+    chooseExtension(index: number) {
+        chooseExtension(index);
+        this.extensionName = getExtension().extInfo.meta.name;
+    }
 
     onLoaded() {
         this.loaded = true;
 
-        getExtensionList();
+        if (this.extensionName) {
+            let index = getExtensionList().findIndex(value => value.meta.name == this.extensionName) || 0;
+            this.chooseExtension(index);
+        } else {
+            this.chooseExtension(0);
+        }
     }
 
     onSearchClick() {
         this.searchDisplay = !this.searchDisplay;
     }
 
-    onView(pic: picInfo) {
-        console.log(pic);
-        this.browsingPic = pic;
+    onView(post: PostInfo) {
+        console.log("view", post);
+
+        this.browsingPost = post;
         this.viewerDisplay = true;
     }
 
@@ -60,17 +72,18 @@ export class LitBooru extends LitElement {
             return html`<booru-loading @onloaded=${this.onLoaded}></booru-loading>`;
         }
 
-        // 一次管4小时
+        // 一次同意管4小时
         let warning = (Date.now() - this.nsfwConfirmDate > 4 * 60 * 60 * 1000 ? html`<booru-warning @close-warning=${this.closeWarning}></booru-warning>` : "");
 
-        let viewer = (this.browsingPic == null ? "" : html`<booru-viewer ?display=${this.viewerDisplay} .pic=${this.browsingPic} .tags=${this.tags} @tags-change=${(e: CustomEvent) => this.tags = e.detail} @close=${() => this.viewerDisplay = false}></booru-viewer>`);
+        // 浏览器没有post会报错
+        let viewer = (this.browsingPost == null ? "" : html`<booru-viewer ?display=${this.viewerDisplay} .post=${this.browsingPost} .tags=${this.tags} @tags-change=${(e: CustomEvent) => this.tags = e.detail} @close=${() => this.viewerDisplay = false}></booru-viewer>`);
 
         return html`
         ${warning}
+        ${viewer}
         <booru-nav @search-click=${this.onSearchClick}></booru-nav>
         <booru-search ?display=${this.searchDisplay} .tags=${this.tags} @tags-change=${(e: CustomEvent) => this.tags = e.detail} @close=${() => this.searchDisplay = false}></booru-search>
-        ${keyed(this.tags, html`<booru-thumbnail .tags=${this.tags} @thumbnail-click=${(e: CustomEvent) => this.onView(e.detail)}></booru-thumbnail>`)}
-        ${viewer}
+        ${keyed(this.tags, html`<booru-posts .tags=${this.tags} @post-click=${(e: CustomEvent) => this.onView(e.detail)}></booru-posts>`)}
         `;
     }
 

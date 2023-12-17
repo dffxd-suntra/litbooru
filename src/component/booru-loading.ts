@@ -1,7 +1,6 @@
 import { LitElement, html, css } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
-import fitty from "fitty";
-import { load } from "../extension";
+import { getExtensionList, load } from "../extension";
 
 @customElement("booru-loading")
 export class BooruLoading extends LitElement {
@@ -26,16 +25,19 @@ export class BooruLoading extends LitElement {
         await load().catch((error: Error) => this.title.innerText = `加载错误,请刷新页面(${error.message})`);
         this.loaded = true;
 
-        // this.dispatchEvent(new Event("onloaded"));
+        if(getExtensionList().length == 0) {
+            this.title.innerText = "Must have least one Extension!";
+            return;
+        }
+
+        this.dispatchEvent(new Event("onloaded"));
     }
 
     render() {
-        return html`<span class="title">Loading...</span>`;
+        return html`<h1 class="title">Loading...</h1>`;
     }
 
     firstUpdated() {
-        fitty(this.title);
-
         this.loadExtList();
     }
 }

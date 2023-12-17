@@ -4,9 +4,9 @@ import { unsafeSVG } from "lit/directives/unsafe-svg.js";
 import { styleMap } from "lit/directives/style-map.js";
 import feather from "feather-icons";
 import $ from "jquery";
-import defaultCSS from "../index.css?inline";
-
+import defaultCSS from "../index.css?inline"; // 滚动条
 import "./base-badge";
+import { getExtension } from "../extension";
 
 @customElement("booru-search")
 export class BooruSearch extends LitElement {
@@ -89,10 +89,10 @@ export class BooruSearch extends LitElement {
     display: boolean = false;
 
     @property({ type: Array, reflect: true })
-    tags: string[] = [];
+    tags: TagInfo[] = [];
 
     @property({ type: Array })
-    searchAdviseList: { [key: string]: string }[] = [];
+    searchAdviseList: TagInfo[] = [];
 
     @property({ type: Boolean })
     searching: boolean = false;
@@ -100,61 +100,23 @@ export class BooruSearch extends LitElement {
     @query("#searchInput")
     searchInputElement: HTMLInputElement;
 
-    tagSearchController: AbortController = new AbortController();
-
-    baseUrl: { [key: string]: URL } = {
-        autoComplete: new URL("https://rule34.xxx/public/autocomplete.php")
-    };
-
-    useCorsProxy1(quest: string) {
-        let url = new URL("https://api.codetabs.com/v1/proxy");
-        url.searchParams.set("quest", quest);
-        return url.href;
-    }
-
-    useCorsProxy2(url: string) {
-        return "https://tame-local-branch.glitch.me/" + url;
-    }
-
-    useCorsProxy3(url: string) {
-        return "https://cors.clicli.workers.dev/?" + url;
-    }
+    lastSearchDate: number;
 
     async onSearch(e: any) {
         this.searchAdviseList = [];
         this.searching = true;
-        let text: string = e.target.value;
-        text = text.trim().replace(/ /g, "_");
-        let negated = text.startsWith("-");
-        if (negated) {
-            text = text.substring(1);
+        let str: string = e.target.value;
+
+        let lastSearchDate = Date.now();
+        this.lastSearchDate = lastSearchDate;
+
+        let data = await getExtension().extClass.autocomplete(str);
+
+        if(this.lastSearchDate == lastSearchDate) {
+            return;
         }
-        console.log(text);
-
-        this.tagSearchController.abort();
-        this.tagSearchController = new AbortController();
-
-        let url = new URL(this.baseUrl.autoComplete);
-        url.searchParams.set("q", text);
-
-        await fetch(this.useCorsProxy2(url.href), { signal: this.tagSearchController.signal })
-            .then(res => res.json())
-            .then(data => { // 使用then避免取消上一次的signal后报错
-                console.log(data);
-
-                if (negated) {
-                    data = data.map((v: any) => {
-                        v.label = "-" + v.label;
-                        v.value = "-" + v.value;
-                        return v;
-                    });
-                }
-
-                this.searchAdviseList = data;
-
-                this.searching = false;
-            })
-            .catch(() => { });
+        
+        this.searchAdviseList = data;
     }
 
     noiseDelay = (() => {
@@ -175,8 +137,8 @@ export class BooruSearch extends LitElement {
         this.noiseDelay("tags-change", () => this.dispatchEvent(new CustomEvent("tags-change", { detail: this.tags })), 500);
     }
 
-    addTag(tag: string) {
-        if (this.tags.includes(tag)) {
+    addTag(tag: TagInfo) {
+        if (this.tags.map(tag => tag.value).includes(tag.value)) {
             return;
         }
 
@@ -184,25 +146,26 @@ export class BooruSearch extends LitElement {
         this.dispatchTagsChangeEvent();
     }
 
-    removeTag(tag: string) {
-        if (!this.tags.includes(tag)) {
+    removeTag(tag: TagInfo) {
+        if (!this.tags.map(tag => tag.value).includes(tag.value)) {
             return;
         }
 
-        this.tags = this.tags.filter(v => v != tag);
+        this.tags = this.tags.filter(v => v.value != tag.value);
         this.dispatchTagsChangeEvent();
     }
 
     render() {
+        console.log(this.tags);
         let tagsElements = this.tags.map(tag => {
             return html`
-            <base-badge @click=${() => this.removeTag(tag)}>${tag}</base-badge>
+            <base-badge @click=${() => this.removeTag(tag)}>${tag.label}</base-badge>
             `;
         });
 
         let adviseElements = this.searchAdviseList.map(tag => {
             return html`
-            <li class="advise" @click=${() => this.addTag(tag.value)}>${tag.label}</li>
+            <li class="advise" @click=${() => this.addTag(tag)}>${tag.label}</li>
             `;
         });
 
@@ -213,14 +176,13 @@ export class BooruSearch extends LitElement {
             <div class="content">
                 <div class="header">
                     <div class="title">BooruSearch!</div>
-                    <a href="https://rule34.xxx/index.php?page=help&topic=post" target="_block">${unsafeSVG(feather.icons["help-circle"].toSvg())}</a>
                     <div class="close" @click=${() => this.dispatchEvent(new CustomEvent("close"))}>${unsafeSVG(feather.icons["x"].toSvg())}</div>
                 </div>
                 <div class="body">
                     <b>${this.tags.length} Tags:(Click to delete)</b>
                     <div class="tags">${tagsElements}</div>
                     <input type="text" placeholder="tag name" id="searchInput" @input=${this.onSearch} />
-                    <q>If you do not access the API for a long time, it will be reinitialized, please wait.</q>
+                    <q>If you do not access the API for a long time, cors proxy will be reinitialized, please wait.</q>
                     <ol>
                         ${adviseElements}
                     </ol>

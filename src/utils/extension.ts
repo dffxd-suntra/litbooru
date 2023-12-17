@@ -1,9 +1,11 @@
+import { ExtensionMeta } from "../types/extension";
+
 /**
  * get and check prop from source（不严谨，但也就这样了
  * @param content extension source
  * @returns extension prop
  */
-export function parseExtensionProp(content: string): { [key: string]: any } {
+export function parseExtensionProp(content: string): ExtensionMeta {
     let prop: any = Object.create(null);
 
     // 解析

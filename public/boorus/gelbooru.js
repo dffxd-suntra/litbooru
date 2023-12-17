@@ -4,7 +4,7 @@
 // @description gelbooru litbooru扩展插件
 // @version 0.0.1
 // @author dffxd-suntra 
-// @website https://gelbooru.com/
+// @source https://gelbooru.com/
 // ==/litbooruExt==
 
 class Gelbooru {
@@ -23,11 +23,11 @@ class Gelbooru {
         return "image";
     }
     async posts(tags, page) {
-        let tagStr = tags.join(" ");
+        let tagStr = tags.map(tag => tag.value).join(" ");
 
         let url = new URL("https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1");
-        url.searchParams.set("tags", tags);
-        url.searchParams.set("limit", limit);
+        url.searchParams.set("tags", tagStr);
+        url.searchParams.set("limit", this.limit);
         url.searchParams.set("pid", page);
 
         let res = await fetch(this.untils.useCors(url.href)).then(res => res.text());
@@ -39,11 +39,12 @@ class Gelbooru {
         } catch (error) {
             return "end";
         };
-        if (data.post == undefined || data.post.length == 0) {
+        data = data.post;
+        if (data == undefined || data.length == 0) {
             return "end";
         }
 
-        return data.post.map(post => {
+        return data.map(post => {
             return {
                 id: post.id,
                 preview_url: post.preview_url,
@@ -51,43 +52,42 @@ class Gelbooru {
                 type: this.getMediaTypeFromFilename(post.image),
                 width: post.width,
                 height: post.height,
-                tags: tags.split(" "),
-                source: `https://gelbooru.com/index.php?page=post&s=view&id=${post.id}` // 指向booru网站的链接,并不是图源链接
+                tags: post.tags.split(" ").map(value => new Object({ label: value, value: value, category: "" })),
+                source: `https://gelbooru.com/index.php?page=post&s=view&id=${post.id}`, // 指向booru网站的链接,并不是图源链接
+                data: post
             };
         });
     }
     async autocomplete(str) {
         let url = new URL("https://gelbooru.com/index.php?page=autocomplete2&type=tag_query&limit=10");
-        url.search.set("term", str);
+        url.searchParams.set("term", str);
 
         let data = await fetch(this.untils.useCors(url.href)).then(res => res.json());
+        console.log(data)
 
-        return data.map(tag => {
-            return {
-                name: tag.name,
-                label: tag.label,
-                category: tag.category
-            }
-        });
+        return data.map(tag => new Object({ label: `${tag.label} (${tag.post_count})`, value: tag.value, category: tag.category }));
     }
     async idToPost(id) {
     }
-    async getTagCategory(tag) {
+    async getTagInfo(tag) {
+    }
+    unMount() {
     }
     constructor(utils, setting) {
         this.untils = utils;
+        this.setting = setting;
         this.limit = setting.limit;
     }
 };
 
 function checkSetting(setting) { // 保存时调用,有错误时请抛出Error,Error内容为提示信息,否则默认算过
-    if(parseInt(setting.limit) == NaN) {
+    if (parseInt(setting.limit) == NaN) {
         throw new Error(`limit必须为数字`);
     }
-    if(parseInt(setting.limit) < 1) {
+    if (parseInt(setting.limit) < 1) {
         throw new Error(`limit必须为正数`);
     }
-    if(parseInt(setting.limit) > 100) {
+    if (parseInt(setting.limit) > 100) {
         throw new Error(`api限制,limit大不了100`);
     }
 }
@@ -95,7 +95,7 @@ function checkSetting(setting) { // 保存时调用,有错误时请抛出Error,E
 export default {
     setting: [
         {
-            id: "limit",
+            name: "limit",
             type: "input",
             label: "limit",
             description: "每页`limit`个图片", // 支持 markdown

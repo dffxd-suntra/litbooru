@@ -4,16 +4,18 @@ import { styleMap } from "lit/directives/style-map.js";
 import { query } from 'lit/decorators.js';
 import $ from "jquery";
 import LazyLoad from "vanilla-lazyload";
+import { PostInfo } from "../types/post";
+import { getExtension } from "../extension";
 
-@customElement("booru-thumbnail")
-export class BooruThumbnail extends LitElement {
+@customElement("booru-posts")
+export class BooruPosts extends LitElement {
     static styles = css`
     img {
         margin: 0;
         padding: 0;
     }
 
-    .pic-container {
+    .post-container {
         position: relative;
     }
 
@@ -25,7 +27,7 @@ export class BooruThumbnail extends LitElement {
         overflow: hidden;
     }
 
-    .thumbnail {
+    .post {
         width: 100%;
     }
 
@@ -39,21 +41,17 @@ export class BooruThumbnail extends LitElement {
     @property({ type: Number })
     pages: number = 0;
 
-    @property({ type: Number })
-    limit: number = 30;
-    // rule34 limit: 1000
-
     @property({ type: Array, reflect: true })
-    tags: string[] = [];
+    tags: TagInfo[] = [];
 
     @property({ type: Boolean })
     isOver: boolean = false;
 
     @property({ type: Array })
-    pics: picInfo[] = [];
+    posts: PostInfo[] = [];
 
-    @query(".pic-container")
-    pic_container: any;
+    @query(".post-container")
+    post_container: any;
 
     @queryAll(".pic")
     pic_elements: any;
@@ -80,10 +78,6 @@ export class BooruThumbnail extends LitElement {
     columnHeight: number[] = [];
     columns: number = 0;
 
-    tagsString() {
-        return this.tags.join(" ");
-    }
-
     delay(ms: number) {
         return new Promise(resolve => setTimeout(() => resolve(ms), ms));
     }
@@ -106,36 +100,18 @@ export class BooruThumbnail extends LitElement {
         if (this.isOver) {
             return;
         }
-        let limit = this.limit;
-        let pages = this.pages;
-        let postsUrl = new URL(this.baseUrl.posts);
 
-        postsUrl.searchParams.set("limit", limit.toString());
-        postsUrl.searchParams.set("pid", pages.toString());
-        postsUrl.searchParams.set("tags", this.tagsString());
-
-        console.log(postsUrl.href);
-        let data = await fetch(postsUrl.href)
-            .then(res => res.json())
-            .then(data => {
-                if (data.length == 0) {
-                    throw new SyntaxError("Last Page");
-                }
-                return data;
-            })
-            .catch(e => {
-                if (e.constructor != SyntaxError) {
-                    return;
-                }
-                this.isOver = true;
-                throw e;
-            });
+        let data = await getExtension().extClass.posts(this.tags, this.pages);
+        if (data == "end") {
+            this.isOver = true;
+            return;
+        }
         console.log(data);
 
         this.pages++;
 
-        this.pics = [...this.pics, ...data];
-        console.log(this.pics);
+        this.posts = [...this.posts, ...data];
+        console.log(this.posts);
 
         await this.updateComplete;
 
@@ -144,17 +120,15 @@ export class BooruThumbnail extends LitElement {
         new LazyLoad({}, <any>$(this.pic_elements).find("img").get());
     }
 
-    async autoLoadPic() {
+    async autoLoadPost() {
         if (this.loading || this.isOver) {
             return;
         }
         if (this.columns == 0 || Math.min(...this.columnHeight) <= $(document).scrollTop() + $(window).height()) {
             this.loading = true;
-            try {
-                await this.loadNextPage();
-            } catch (e) { };
+            await this.loadNextPage();
             this.loading = false;
-            this.autoLoadPic();
+            this.autoLoadPost();
         }
     }
 
@@ -197,32 +171,32 @@ export class BooruThumbnail extends LitElement {
             });
             columnHeight[j] += $(this.pic_elements[i]).height();
         }
-        $(this.pic_container).css("height", Math.max(...columnHeight));
+        $(this.post_container).css("height", Math.max(...columnHeight));
         this.columns = columns;
         this.columnHeight = columnHeight;
     }
 
-    onThumbnailClick(pic: picInfo) {
-        this.dispatchEvent(new CustomEvent("thumbnail-click", { detail: pic }));
+    onPostClick(post: PostInfo) {
+        this.dispatchEvent(new CustomEvent("post-click", { detail: post }));
     }
 
     handleWindowResize = () => {
         this.noiseDelay("waterfall", () => {
             this.waterfall();
-            this.autoLoadPic();
+            this.autoLoadPost();
         }, 500);
     }
 
     handleWindowScroll = () => {
-        this.autoLoadPic();
+        this.autoLoadPost();
     }
 
     render() {
-        let picsHtml = this.pics.map(pic => {
+        let picsHtml = this.posts.map(post => {
             return html`
-            <div @click=${() => this.onThumbnailClick(pic)} class="pic">
-                <div style=${styleMap({ height: "0", "padding-bottom": `${pic.height / pic.width * 100}%` })}>
-                    <img class="thumbnail lazy" src=${pic.sample_url} />
+            <div @click=${() => this.onPostClick(post)} class="pic">
+                <div style=${styleMap({ height: "0", "padding-bottom": `${post.height / post.width * 100}%` })}>
+                    <img class="post lazy" src=${post.preview_url} />
                 </div>
             </div>
             `;
@@ -231,11 +205,11 @@ export class BooruThumbnail extends LitElement {
         let pageState = [ // 以后再也不用ts了，类型检查根史一样
             [this.isOver, html`<div>The END</div>`],
             [this.loading, html`<div>Loading...</div>`],
-            [!this.loading, html`<div @click=${this.autoLoadPic}>Click to Load Next Page</div>`]
+            [!this.loading, html`<div @click=${this.autoLoadPost}>Click to Load Next Page</div>`]
         ].find(v => v[0])[1];
 
         return html`
-        <div class="pic-container">
+        <div class="post-container">
             ${picsHtml}
         </div>
         <div class="page-state">
@@ -260,12 +234,12 @@ export class BooruThumbnail extends LitElement {
 
     firstUpdated() {
         // console.log("inited");
-        this.autoLoadPic();
+        this.autoLoadPost();
     }
 }
 
 declare global {
     interface HTMLElementTagNameMap {
-        "booru-thumbnail": BooruThumbnail
+        "booru-posts": BooruPosts
     }
 }
