@@ -6,10 +6,8 @@ import feather from "feather-icons";
 import $ from "jquery";
 import defaultCSS from "../index.css?inline";
 
-import "./base-badge";
-
-@customElement("booru-setting")
-export class BooruSetting extends LitElement {
+@customElement("booru-options")
+export class BooruOptions extends LitElement {
     static styles = [css`
     .dialog {
         position: fixed;
@@ -128,6 +126,6 @@ export class BooruSetting extends LitElement {
 
 declare global {
     interface HTMLElementTagNameMap {
-        "booru-setting": BooruSetting
+        "booru-options": BooruOptions
     }
 }

@@ -24,6 +24,9 @@ export class LitBooru extends LitElement {
     searchDisplay: boolean = false;
 
     @property({ type: Boolean })
+    optionDisplay: boolean = false;
+
+    @property({ type: Boolean })
     viewerDisplay: boolean = false;
 
     @property({ type: Object })
@@ -52,7 +55,11 @@ export class LitBooru extends LitElement {
     }
 
     onSearchClick() {
-        this.searchDisplay = !this.searchDisplay;
+        this.searchDisplay = true;
+    }
+
+    onOptionClick() {
+        this.optionDisplay = true;
     }
 
     onView(post: PostInfo) {
@@ -81,7 +88,7 @@ export class LitBooru extends LitElement {
         return html`
         ${warning}
         ${viewer}
-        <booru-nav @search-click=${this.onSearchClick}></booru-nav>
+        <booru-nav @search-click=${this.onSearchClick} @option-click=${this.onOptionClick}></booru-nav>
         <booru-search ?display=${this.searchDisplay} .tags=${this.tags} @tags-change=${(e: CustomEvent) => this.tags = e.detail} @close=${() => this.searchDisplay = false}></booru-search>
         ${keyed(this.tags, html`<booru-posts .tags=${this.tags} @post-click=${(e: CustomEvent) => this.onView(e.detail)}></booru-posts>`)}
         `;
@@ -93,6 +100,9 @@ export class LitBooru extends LitElement {
         let url = new URL(location.href);
         url.searchParams.set("tags", this.tags.join(" "));
         url.searchParams.set("ext", this.extensionName);
+        if(this.viewerDisplay) {
+            url.searchParams.set("preview", this.browsingPost.id.toString());
+        }
         history.pushState({}, "", url.href);
     }
 

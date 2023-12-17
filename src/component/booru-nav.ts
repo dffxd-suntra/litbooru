@@ -31,16 +31,20 @@ export class BooruNav extends LitElement {
     }
     `;
 
-    onSearch() {
+    onSearchClick() {
         this.dispatchEvent(new Event("search-click"));
+    }
+
+    onOptionClick() {
+        this.dispatchEvent(new Event("option-click"));
     }
 
     render() {
         return html`
         <div class="nav">
             <a class="title" href="." title="back to homepage">Lit Booru</a>
-            <span @click=${this.onSearch}>Search</span>
-            <span style="margin-left: 0.5em;" @click=${() => alert("wait a minite")}>Options</span>
+            <span @click=${this.onOptionClick}>Options</span>
+            <span style="margin-left: 0.5em;" @click=${this.onSearchClick}>Search</span>
         </div>
         `;
     }

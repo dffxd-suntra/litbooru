@@ -112,7 +112,7 @@ export class BooruSearch extends LitElement {
 
         let data = await getExtension().extClass.autocomplete(str);
 
-        if(this.lastSearchDate == lastSearchDate) {
+        if(this.lastSearchDate != lastSearchDate) {
             return;
         }
         
