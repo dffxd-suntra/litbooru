@@ -101,7 +101,13 @@ export class BooruPosts extends LitElement {
             return;
         }
 
-        let data = await getExtension().extClass.posts(this.tags, this.pages);
+        let data;
+        try {
+            data = await getExtension().extClass.posts(this.tags, this.pages);
+        } catch(error) {
+            console.error("Posts Load ERROR:", error);
+            return;
+        };
         if (data == "end") {
             this.isOver = true;
             return;

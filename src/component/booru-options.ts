@@ -51,19 +51,9 @@ export class BooruOptions extends LitElement {
         margin-right: auto;
     }
 
-    .advise {
-        box-sizing: border-box;
-        width: 100%;
-        font-size: large;
-        padding: 5px;
-    }
-
-    .advise:hover {
-        background-color: rgba(255, 255, 255, .3);
-    }
-
-    .tags {
-        margin-bottom: 1rem;
+    .footer {
+        display: flex;
+        justify-content: space-between;
     }
 
     a {
@@ -105,14 +95,14 @@ export class BooruOptions extends LitElement {
         <div class="dialog" style=${styleMap({ display: (this.display ? "" : "none") })}>
             <div class="content">
                 <div class="header">
-                    <div class="title">BooruSearch!</div>
-                    <a href="https://rule34.xxx/index.php?page=help&topic=post" target="_block">${unsafeSVG(feather.icons["help-circle"].toSvg())}</a>
+                    <div class="title">BooruOptions!</div>
                     <div class="close" @click=${() => this.dispatchEvent(new CustomEvent("close"))}>${unsafeSVG(feather.icons["x"].toSvg())}</div>
                 </div>
                 <div class="body">
                 </div>
                 <div class="footer">
                     <a href="https://github.com/dffxd-suntra/litbooru">${unsafeSVG(feather.icons["github"].toSvg())}Litbooru Source</a>
+                    <button>Apply & Reload</button>
                 </div>
             </div>
         </div>

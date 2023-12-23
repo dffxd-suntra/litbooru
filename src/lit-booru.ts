@@ -8,6 +8,7 @@ import "./component/booru-nav";
 import "./component/booru-search";
 import "./component/booru-loading";
 import "./component/booru-viewer";
+import "./component/booru-options";
 
 import { chooseExtension, getExtension, getExtensionList } from "./extension";
 import { PostInfo } from "./types/post";
@@ -89,6 +90,7 @@ export class LitBooru extends LitElement {
         ${warning}
         ${viewer}
         <booru-nav @search-click=${this.onSearchClick} @option-click=${this.onOptionClick}></booru-nav>
+        <booru-options ?display=${this.optionDisplay} @close=${() => this.optionDisplay = false}></booru-options>
         <booru-search ?display=${this.searchDisplay} .tags=${this.tags} @tags-change=${(e: CustomEvent) => this.tags = e.detail} @close=${() => this.searchDisplay = false}></booru-search>
         ${keyed(this.tags, html`<booru-posts .tags=${this.tags} @post-click=${(e: CustomEvent) => this.onView(e.detail)}></booru-posts>`)}
         `;
@@ -98,7 +100,7 @@ export class LitBooru extends LitElement {
         window.clarity("set", "tags", this.tags);
 
         let url = new URL(location.href);
-        url.searchParams.set("tags", this.tags.join(" "));
+        url.searchParams.set("tags", this.tags.map(tag => tag.value).join(" "));
         url.searchParams.set("ext", this.extensionName);
         if(this.viewerDisplay) {
             url.searchParams.set("preview", this.browsingPost.id.toString());

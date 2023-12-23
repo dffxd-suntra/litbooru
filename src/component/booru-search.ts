@@ -179,10 +179,11 @@ export class BooruSearch extends LitElement {
                     <div class="close" @click=${() => this.dispatchEvent(new CustomEvent("close"))}>${unsafeSVG(feather.icons["x"].toSvg())}</div>
                 </div>
                 <div class="body">
-                    <b>${this.tags.length} Tags:(Click to delete)</b>
+                    <b>${this.tags.length} Tags:(Click to remove)</b>
                     <div class="tags">${tagsElements}</div>
                     <input type="text" placeholder="tag name" id="searchInput" @input=${this.onSearch} />
                     <q>If you do not access the API for a long time, cors proxy will be reinitialized, please wait.</q>
+                    <b>${this.searchAdviseList.length} Advise:</b>
                     <ol>
                         ${adviseElements}
                     </ol>
