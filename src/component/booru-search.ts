@@ -115,7 +115,8 @@ export class BooruSearch extends LitElement {
         if(this.lastSearchDate != lastSearchDate) {
             return;
         }
-        
+
+        this.searching = false;
         this.searchAdviseList = data;
     }
 

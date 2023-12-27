@@ -20,8 +20,6 @@ export class BooruOptions extends LitElement {
 
         display: flex;
         justify-content: center;
-
-        overflow: auto;
     }
 
     .content {
@@ -36,6 +34,10 @@ export class BooruOptions extends LitElement {
 
         display: flex;
         flex-direction: column;
+
+        position: relative;
+
+        overflow: auto;
     }
 
     .header {
@@ -54,6 +56,10 @@ export class BooruOptions extends LitElement {
     .footer {
         display: flex;
         justify-content: space-between;
+
+        position: fixed;
+        bottom: 0;
+        width: 100%;
     }
 
     a {
@@ -90,6 +96,9 @@ export class BooruOptions extends LitElement {
         }
     })();
 
+    applyAndReload() {
+    }
+
     render() {
         return html`
         <div class="dialog" style=${styleMap({ display: (this.display ? "" : "none") })}>
@@ -102,7 +111,7 @@ export class BooruOptions extends LitElement {
                 </div>
                 <div class="footer">
                     <a href="https://github.com/dffxd-suntra/litbooru">${unsafeSVG(feather.icons["github"].toSvg())}Litbooru Source</a>
-                    <button>Apply & Reload</button>
+                    <button @click=${() => this.applyAndReload()}>Apply & Reload</button>
                 </div>
             </div>
         </div>

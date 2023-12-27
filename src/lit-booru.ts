@@ -37,7 +37,7 @@ export class LitBooru extends LitElement {
     extensionName: string = new URL(location.href).searchParams.get("ext") || "";
 
     @property({ type: Array })
-    tags: TagInfo[] = (new URL(location.href).searchParams.get("tags") || "").split(" ").filter(tag => tag != "").map(value => <TagInfo>new Object({ name: value, label: value, category: "" }));
+    tags: TagInfo[] = (new URL(location.href).searchParams.get("tags") || "").split(" ").filter(tag => tag != "").map(value => <TagInfo>new Object({ label: value, value: value, category: "" }));
 
     chooseExtension(index: number) {
         chooseExtension(index);
@@ -102,8 +102,10 @@ export class LitBooru extends LitElement {
         let url = new URL(location.href);
         url.searchParams.set("tags", this.tags.map(tag => tag.value).join(" "));
         url.searchParams.set("ext", this.extensionName);
-        if(this.viewerDisplay) {
+        if (this.viewerDisplay) {
             url.searchParams.set("preview", this.browsingPost.id.toString());
+        } else {
+            url.searchParams.delete("preview");
         }
         history.pushState({}, "", url.href);
     }
