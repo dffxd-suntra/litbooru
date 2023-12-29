@@ -127,11 +127,11 @@ export class BooruViewer extends LitElement {
                     <tbody>
                         <tr>
                             <th>Url:</th>
-                            <td><a href=${this.post.view_url} target="_block">${this.post.view_url}</a></td>
+                            <td><a href=${this.post.view_url} target="_blank">${this.post.view_url}</a></td>
                         </tr>
                         <tr>
                             <th>Source:</th>
-                            <td>${this.post.source || "none"}</td>
+                            <td><a href=${this.post.source || "javascript:void"} target="_blank">${this.post.source || "none"}</a></td>
                         </tr>
                         <tr>
                             <th>Tags:</th>

@@ -108,6 +108,8 @@ export class LitBooru extends LitElement {
             url.searchParams.delete("preview");
         }
         history.pushState({}, "", url.href);
+
+        document.title = `Litbooru${(this.tags.length != 0?`-${this.tags.map(tag => tag.label).join(",")}`:"")}-${this.extensionName}`;
     }
 
     firstUpdated() {
