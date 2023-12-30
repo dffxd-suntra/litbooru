@@ -202,7 +202,7 @@ export class BooruPosts extends LitElement {
             return html`
             <div @click=${() => this.onPostClick(post)} class="pic">
                 <div style=${styleMap({ height: "0", "padding-bottom": `${post.height / post.width * 100}%` })}>
-                    <img class="post lazy" src=${post.preview_url} />
+                    <img class="post lazy" src=${post.preview_url} alt=${post.tags.map(tag => tag.label).join(",")} />
                 </div>
             </div>
             `;
